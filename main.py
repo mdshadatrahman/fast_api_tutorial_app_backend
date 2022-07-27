@@ -4,20 +4,15 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from pydantic import BaseModel
 from requests import Session
-from . import models
+from . import models, schemas
 from sqlalchemy.orm import Session
 from .database import engine, get_db
+
+
 models.Base.metadata.create_all(bind=engine)
 
 
 app = FastAPI()
-
-
-class Post(BaseModel):
-    # id: int = randrange(0, 100000)
-    title: str
-    content: str
-
 
 while True:
     try:
@@ -50,13 +45,8 @@ def get_posts():
     return {"data": posts}
 
 
-@app.get("/alchemy")
-def get_posts(db: Session = Depends(get_db)):
-    return {"data": "successful"}
-
-
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
-def create_post(post: Post, response: Response):
+def create_post(post: schemas.PostCreate, response: Response):
     cursor.execute(
         """INSERT INTO posts (title, content) VALUES (%s, %s) RETURNING *""", (post.title, post.content))
     new_post = cursor.fetchone()
@@ -90,7 +80,7 @@ def delete_post(id: int):
 
 
 @app.put("/posts/{id}", status_code=status.HTTP_200_OK)
-def update_post(id: int, post: Post):
+def update_post(id: int, post: schemas.PostCreate):
     cursor.execute("""UPDATE posts SET title = %s, content = %s WHERE id = %s RETURNING *""",
                    (post.title, post.content, str(id),))
     updated_post = cursor.fetchone()
@@ -101,5 +91,5 @@ def update_post(id: int, post: Post):
 
     return {"data": updated_post}
 
-#Added this comment from manjaro
-#Added this comment from windows11
+# Added this comment from manjaro
+# Added this comment from windows11
