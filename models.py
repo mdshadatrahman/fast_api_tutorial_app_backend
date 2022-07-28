@@ -1,5 +1,3 @@
-from enum import unique
-from tkinter.tix import Tree
 from sqlalchemy import TIMESTAMP, Boolean, Column, Integer, String, text
 from .database import Base
 

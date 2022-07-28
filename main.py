@@ -3,9 +3,9 @@ from typing import List
 from fastapi import Depends, FastAPI, Response, status, HTTPException
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from pydantic import BaseModel
 from requests import Session
 from . import models, schemas
+from . import utils
 from sqlalchemy.orm import Session
 from .database import engine, get_db
 
@@ -97,5 +97,16 @@ def update_post(id: int, updated_post: schemas.PostCreate, db: Session = Depends
     db.commit()
     return post_query.first()
 
-# Added this comment from manjaro
-# Added this comment from windows11
+
+@app.post('/users', status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut)
+def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+
+    # hash the password
+    hashed_password = utils.hash(user.password)
+    user.password = hashed_password
+
+    new_user = models.User(**user.dict())
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
