@@ -4,7 +4,6 @@ from anyio import current_effective_deadline
 from fastapi import Depends, Response, status, HTTPException, APIRouter
 
 from app import oauth2
-# from requests import Session
 from .. import models, schemas
 from sqlalchemy.orm import Session
 from ..database import get_db
