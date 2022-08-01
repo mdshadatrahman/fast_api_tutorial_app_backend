@@ -1,5 +1,6 @@
 from collections import UserDict
 from typing import List
+from anyio import current_effective_deadline
 from fastapi import Depends, Response, status, HTTPException, APIRouter
 
 from app import oauth2
@@ -24,7 +25,8 @@ def get_posts(db: Session = Depends(get_db)):
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
-def create_post(post: schemas.PostCreate, db: Session = Depends(get_db), user_id: int = Depends(oauth2.get_current_user)):
+def create_post(post: schemas.PostCreate, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
+    print(current_user.email)
     new_post = models.Post(**post.dict())
     db.add(new_post)
     db.commit()
@@ -34,7 +36,7 @@ def create_post(post: schemas.PostCreate, db: Session = Depends(get_db), user_id
 
 
 @router.get("/{id}", response_model=schemas.Post)
-def get_post(id: int, response: Response, db: Session = Depends(get_db)):
+def get_post(id: int, db: Session = Depends(get_db)):
     data = db.query(models.Post).filter(models.Post.id == id).first()
     if not data:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -43,7 +45,7 @@ def get_post(id: int, response: Response, db: Session = Depends(get_db)):
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_post(id: int, db: Session = Depends(get_db), user_id: int = Depends(oauth2.get_current_user)):
+def delete_post(id: int, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
     # post = cursor.execute(
     #     """DELETE FROM posts WHERE id = %s RETURNING *""", (str(id),))
     # post = cursor.fetchone()
@@ -60,7 +62,7 @@ def delete_post(id: int, db: Session = Depends(get_db), user_id: int = Depends(o
 
 
 @router.put("/{id}", status_code=status.HTTP_200_OK, response_model=schemas.Post)
-def update_post(id: int, updated_post: schemas.PostCreate, db: Session = Depends(get_db), user_id: int = Depends(oauth2.get_current_user)):
+def update_post(id: int, updated_post: schemas.PostCreate, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
     # cursor.execute("""UPDATE posts SET title = %s, content = %s WHERE id = %s RETURNING *""",
     #                (post.title, post.content, str(id),))
     # updated_post = cursor.fetchone()
