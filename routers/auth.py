@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from requests import Session
-from app import models, oauth2, schemas, utils
+from sqlalchemy.orm import Session
+from app import models, oauth2, utils
 from app.database import get_db
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 
@@ -23,6 +23,7 @@ def login(user_credentials: OAuth2PasswordRequestForm = Depends(), db: Session =
             status_code=status.HTTP_404_NOT_FOUND, detail=f"Invalid credentials")
 
     # JWT Token
+    # user_id is the data which i want to put in the payload.
     access_token = oauth2.create_access_token(data={"user_id": user.id})
 
     return {"access_token": access_token, "token_type": "bearer"}
