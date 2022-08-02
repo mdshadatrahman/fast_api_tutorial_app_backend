@@ -13,7 +13,7 @@ router = APIRouter(
 
 
 @router.get("/", response_model=List[schemas.Post])
-def get_posts(db: Session = Depends(get_db), limit: int = 10, skip: int = 0, search=Optional[str]):
+def get_posts(db: Session = Depends(get_db), limit: int = 10, skip: int = 0, search: Optional[str] = ""):
 
     posts = db.query(models.Post).filter(
         models.Post.title.contains(search)).limit(limit).offset(skip).all()
