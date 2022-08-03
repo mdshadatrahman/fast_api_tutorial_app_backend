@@ -4,7 +4,7 @@ import models
 import oauth2
 import schemas
 import utils
-from app.database import get_db
+from database import get_db
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 
 router = APIRouter(
