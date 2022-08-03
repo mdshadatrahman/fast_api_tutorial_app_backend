@@ -1,8 +1,9 @@
-from operator import mod
-from pyexpat import model
-from time import process_time
-from fastapi import Depends, Response, status, HTTPException, APIRouter
-from .. import schemas, database, models, oauth2
+
+from fastapi import Depends, status, HTTPException, APIRouter
+import schemas
+import database
+import models
+import oauth2
 from sqlalchemy.orm import Session
 
 
